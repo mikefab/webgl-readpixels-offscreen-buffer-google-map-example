@@ -1,0 +1,78 @@
+%html{:lang => "en", "ng-app" => "myApp"}
+  %head
+    %script{:src => "https://maps.googleapis.com/maps/api/js?v=3.6&?key=AIzaSyAkyvfxLRt8uJ3gZlduH38ZQSF30_5N9cA&sensor=true"}
+    %script{:src => "http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"}
+    %script{:src => "/assets/CanvasLayer.js"}
+    %script{:src => "/assets/underscore.js"}
+    %script{:src => "https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"}
+    %script{ src: javascript_path('application') }
+    %link{:href => "https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.css", :rel => "stylesheet", :type => "text/css"}
+    %meta{:charset => "utf-8"}/
+    %title My AngularJS App
+    :css
+      body {
+        background:white;
+      }
+
+      #map-canvas {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+          }
+
+      #map { height: 500px; }
+  %body
+    .container-fluid
+    .row
+      .col-md-1
+        &nbsp;
+      .col-md-10{style: "padding: 20px;"}
+        .col-md-12{style: "background-color:rgba(86,61,124,.15);padding-bottom: 10px;padding-top: 10px;border-radius: 10px;font-size:16px"}
+          %p
+            An example of Webgl picking data points with readPixels from a google map using an offscreen buffer.
+            %strong
+              Mouseover
+            a point for the city name.
+          %p
+            References:
+            = succeed ',' do
+              %a{href: 'http://build-failed.blogspot.com/2013/02/displaying-webgl-data-on-google-maps.html'} Displaying WebGL data on Google Maps
+            = succeed ',' do
+              %a{href: 'https://www.youtube.com/watch?v=aZJnI6hxr-c'} Google Maps + HTML5 + Spatial Data Visualization
+            Chaper 8 of
+            %a{href: 'https://www.packtpub.com/game-development/webgl-beginners-guide'}WebGL Beginner's Guide
+            
+
+            
+  
+      .col-md-1
+        &nbsp;
+    %script#pointVertexShader{:type => "x-shader/x-vertex"}
+      attribute vec4  worldCoord;
+      attribute vec4  color;
+      attribute float aPointSize;
+
+      varying vec4 vColor;
+      uniform mat4 mapMatrix;
+
+      void main() {
+
+      \// transform world coordinate by matrix uniform variable
+      gl_Position = mapMatrix * worldCoord;
+      vColor = color;
+      gl_PointSize = aPointSize;
+
+      }
+
+
+    %script#pointFragmentShader{:type => "x-shader/x-fragment"}
+      precision mediump float;
+      varying vec4 vColor;
+      void main() {
+      gl_FragColor = vColor;
+      }
+
+  %div{"ng-controller" => "myCtrl"}
+    #coords
+    #map{map: ''}
+#infoWindow{style:'position:absolute;background-color:yellow;display:none;width:130px;height:20px;z-index:1;'}
